@@ -33,8 +33,16 @@
 // _.once가 리턴하는 함수를 여러 번 호출해도 callback 함수는 한 번 이상 호출되지 않습니다.
 _.once = function (func) {
   // TODO: 여기에 코드를 작성합니다.
+  let isCall;
+  let result;
 
   return function () {
+    if(!isCall) {
+      isCall = true;
+    } else {
+      return result;
+    }
+    return result = func(...arguments)
     // TIP: arguments 키워드 혹은, spread operator를 사용하세요.
   };
 };
@@ -44,6 +52,10 @@ _.once = function (func) {
 // 필요하면, Chapter - 비동기를 예습하세요.
 _.delay = function (func, wait) {
   // TODO: 여기에 코드를 작성합니다.
+  let arg = [...arguments].slice(2);
+  setTimeout(function(){
+    func(...arg)
+  },wait)
 };
 
 /**
@@ -57,6 +69,11 @@ _.delay = function (func, wait) {
 // 입력으로 전달되는 배열의 요소는 모두 primitive value라고 가정합니다.
 _.includes = function (arr, target) {
   // TODO: 여기에 코드를 작성합니다.
+  let result = false;
+  _.each(arr,function(value){
+    if(value === target) result=true;
+  })
+  return result;
 };
 
 // _.every는 배열의 모든 요소가 test 함수(iteratee)를 통과하면 true를, 그렇지 않은 경우 false를 리턴합니다.
@@ -66,6 +83,20 @@ _.includes = function (arr, target) {
 // 빈 배열을 입력받은 경우, true를 리턴해야 합니다. (공허하게 참, vacantly true)
 _.every = function (arr, iteratee) {
   // TODO: 여기에 코드를 작성합니다.
+  let result = true;
+  if(arr.length === 0) return true;
+  else if(iteratee === undefined){
+    _.each(arr,function(value){
+      if(!value) result = false;
+    })
+  }
+  else{
+    _.each(arr,function(value){
+      if(!iteratee(value)) result = false;
+    })
+  }
+  
+  return result;
 };
 
 // _.some은 배열의 요소 중 하나라도 test 함수(iteratee)를 통과하면 true를, 그렇지 않은 경우 false를 리턴합니다.
@@ -73,6 +104,20 @@ _.every = function (arr, iteratee) {
 // 그 외 조건은 앞서 _.every와 동일합니다.
 _.some = function (arr, iteratee) {
   // TODO: 여기에 코드를 작성합니다.
+  let result = false;
+  if(arr.length === 0) return false;
+  else if(iteratee === undefined){
+    _.each(arr,function(value){
+      if(!!value) result = true;
+    })
+  }
+  else{
+    _.each(arr,function(value){
+      if(!!iteratee(value)) result = true;
+    })
+  }
+  
+  return result;
 };
 
 /**
@@ -106,11 +151,35 @@ _.some = function (arr, iteratee) {
 // _.each를 사용해서 구현합니다.
 _.extend = function () {
   // TODO: 여기에 코드를 작성합니다.
+  let result;
+  let arg = [...arguments];
+  _.each(arg,function(obj,index){
+    if(index === 0) result = obj;
+    else{
+      for(let prop in obj){
+        result[prop] = obj[prop];
+      }
+    }
+  })
+  return result;
 };
 
 // _.defaults는 _.extend와 비슷하게 동작하지만, 이미 존재하는 속성(key)을 덮어쓰지 않습니다.
 _.defaults = function () {
   // TODO: 여기에 코드를 작성합니다.
+  let result;
+  let arg = [...arguments];
+  _.each(arg,function(obj,index){
+    if(index === 0) result = obj;
+    else{
+      for(let prop in obj){
+        if(result[prop] === undefined){
+          result[prop] = obj[prop];
+        }
+      }
+    }
+  })
+  return result;
 };
 
 /**
@@ -134,6 +203,26 @@ _.defaults = function () {
 //  console.log(result); // --> [['a',1], ['b',2], ['c', undefined]]
 _.zip = function () {
   // TODO: 여기에 코드를 작성합니다.
+  let result = [];
+  let arg = [...arguments];
+  let long = 0;
+  _.each(arg,function(value,index){
+    if(index === 0){
+      long = value.length;
+      for(let i of value){
+        result.push([i]);
+      }
+    }else{
+      for(let i=0; i<value.length; i++){
+        if(result[i] !== undefined){
+          result[i].push(value[i])
+        }
+        else if(result){}
+      }
+    }
+  })
+
+  return result;
 };
 
 // _.zipStrict은 _.zip과 비슷하게 동작하지만,
